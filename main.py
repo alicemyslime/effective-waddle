@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from facts import facts
+from fastapi import FastAPI, HTTPException
+from facts import CatFactAPIError, get_facts as fetch_facts, get_random_fact
 
 app = FastAPI()
 
@@ -8,12 +8,29 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
+
 @app.get("/facts")
 async def get_facts():
-    return {"facts": facts[:50]}
+    try:
+        return {"facts": await fetch_facts()}
+    except CatFactAPIError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.get("/facts/random")
+async def get_random_cat_fact():
+    try:
+        return {"fact": await get_random_fact()}
+    except CatFactAPIError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
 
 @app.get("/facts/{index}")
 async def get_fact(index: int):
+    try:
+        facts = await fetch_facts()
+    except CatFactAPIError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     if index < 0 or index >= len(facts):
         return {"error": "Index out of range"}
     return {"fact": facts[index]}
