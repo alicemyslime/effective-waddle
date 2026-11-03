@@ -11,3 +11,9 @@ async def root():
 @app.get("/facts")
 async def get_facts():
     return {"facts": facts[:50]}
+
+@app.get("/facts/{index}")
+async def get_fact(index: int):
+    if index < 0 or index >= len(facts):
+        return {"error": "Index out of range"}
+    return {"fact": facts[index]}
