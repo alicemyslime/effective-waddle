@@ -19,8 +19,8 @@ async def get_facts():
 
 @app.get("/facts/random")
 async def get_random_cat_fact():
-``` docstring - editing docstring
-```
+    '''
+    Get a random cat fact from the cat facts API.'''
     try:
         return {"fact": await get_random_fact()}
     except CatFactAPIError as exc:
