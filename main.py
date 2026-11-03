@@ -34,3 +34,11 @@ async def get_fact(index: int):
     if index < 0 or index >= len(facts):
         return {"error": "Index out of range"}
     return {"fact": facts[index]}
+
+@app.get("/facts/count")
+async def get_facts_count():
+    try:
+        facts = await fetch_facts()
+    except CatFactAPIError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return {"count": len(facts)}
